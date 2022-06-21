@@ -32,29 +32,23 @@ class _ConnectionSplashScreenState extends State<ConnectionSplashScreen> {
   late ServerSocket server;
 
   connect() async {
-    server = await ServerSocket.bind("127.0.0.1", int.parse(widget.port));
-    socket = await Socket.connect(widget.ip, int.parse(widget.port));
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                ChatScreen(server, socket, widget.encryptor)));
-    // try {
-    //   server = await ServerSocket.bind(
-    //       InternetAddress.anyIPv4, int.parse(widget.port));
-    //   socket = await Socket.connect(widget.ip, int.parse(widget.port));
-    //   Navigator.push(
-    //       context,
-    //       MaterialPageRoute(
-    //           builder: (context) =>
-    //               ChatScreen(server, socket, widget.encryptor)));
-    // } on SocketException catch (_) {
-    //   _showToast(_.message);
-    //   //server.close();
-    //   await Future.delayed(Duration(seconds: 1));
-    //   Navigator.push(
-    //       context, MaterialPageRoute(builder: (context) => ConnectionScreen()));
-    // }
+    try {
+      server = await ServerSocket.bind(
+          InternetAddress.anyIPv4, int.parse(widget.port));
+      socket = await Socket.connect(widget.ip, int.parse(widget.port),
+          timeout: Duration(seconds: 3));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  ChatScreen(server, socket, widget.encryptor)));
+    } on SocketException catch (_) {
+      _showToast(_.message);
+      //server.close();
+      await Future.delayed(Duration(seconds: 1));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => ConnectionScreen()));
+    }
   }
 
   _showToast(String msg) {

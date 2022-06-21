@@ -32,6 +32,26 @@ class _ChatScreenState extends State<ChatScreen> {
 
     encryptor_key = widget.encryptor;
 
+    widget.socket.listen(
+      // handle data from the server
+      (Uint8List data) {
+        final serverResponse = String.fromCharCodes(data);
+        print('Server: $serverResponse');
+      },
+
+      // handle errors
+      onError: (error) {
+        print(error);
+        widget.socket.destroy();
+      },
+
+      // handle server ending connection
+      onDone: () {
+        print('Server left.');
+        widget.socket.destroy();
+      },
+    );
+
     widget.server.listen((client) {
       handleConnection(client);
     });
