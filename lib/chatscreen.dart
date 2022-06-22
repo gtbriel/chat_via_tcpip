@@ -57,6 +57,37 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  void handleConnection(Socket client) {
+    print('Connection from'
+        ' ${client.remoteAddress.address}:${client.remotePort}');
+
+    // listen for events from the client
+    client.listen(
+      // handle data from the client
+      (Uint8List data) async {
+        await Future.delayed(Duration(seconds: 1));
+        RC4 obj = RC4(encryptor_key);
+        String data_tmp = obj.decodeBytes((data.toList()));
+        ChatMessage new_message =
+            ChatMessage(messageContent: data_tmp, messageType: "receiver");
+        messages.add(new_message);
+        setState(() {});
+      },
+
+      // handle errors
+      onError: (error) {
+        print(error);
+        client.close();
+      },
+
+      // handle the client closing the connection
+      onDone: () {
+        print('Client left');
+        client.close();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final msg_field = TextFormField(
@@ -184,36 +215,5 @@ class _ChatScreenState extends State<ChatScreen> {
     List<int> bytes = obj.encodeBytes(utf8.encode(message));
     socket.add(bytes);
     await Future.delayed(Duration(seconds: 2));
-  }
-
-  void handleConnection(Socket client) {
-    print('Connection from'
-        ' ${client.remoteAddress.address}:${client.remotePort}');
-
-    // listen for events from the client
-    client.listen(
-      // handle data from the client
-      (Uint8List data) async {
-        await Future.delayed(Duration(seconds: 1));
-        RC4 obj = RC4(encryptor_key);
-        String data_tmp = obj.decodeBytes((data.toList()));
-        ChatMessage new_message =
-            ChatMessage(messageContent: data_tmp, messageType: "receiver");
-        messages.add(new_message);
-        setState(() {});
-      },
-
-      // handle errors
-      onError: (error) {
-        print(error);
-        client.close();
-      },
-
-      // handle the client closing the connection
-      onDone: () {
-        print('Client left');
-        client.close();
-      },
-    );
   }
 }
