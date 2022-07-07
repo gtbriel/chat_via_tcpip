@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:chat_sg/classes/abstract/encryptor.dart';
+import 'package:chat_sg/classes/chat_client.dart';
 import 'package:chat_sg/classes/chat_message.dart';
 import 'package:chat_sg/connectionscreen.dart';
 import 'package:flutter/material.dart';
@@ -9,10 +10,10 @@ import 'package:flutter/material.dart';
 import 'classes/encryptors/rc4.dart';
 
 class ChatScreen extends StatefulWidget {
+  final Socket chat_client;
   final ServerSocket server;
-  final Socket socket;
   final String encryptor;
-  const ChatScreen(this.server, this.socket, this.encryptor, {Key? key})
+  const ChatScreen(this.server, this.chat_client, this.encryptor, {Key? key})
       : super(key: key);
 
   @override
@@ -25,67 +26,43 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<ChatMessage> messages = [];
   final ScrollController _scrollController = ScrollController();
   late String encryptor_key;
+  late Socket client;
 
   @override
   void initState() {
     super.initState();
-
     encryptor_key = widget.encryptor;
-
-    widget.socket.listen(
-      // handle data from the server
-      (Uint8List data) {
-        final serverResponse = String.fromCharCodes(data);
-        print('Server: $serverResponse');
-      },
-
-      // handle errors
-      onError: (error) {
-        print(error);
-        widget.socket.destroy();
-      },
-
-      // handle server ending connection
-      onDone: () {
-        print('Server left.');
-        widget.socket.destroy();
-      },
-    );
-
-    widget.server.listen((client) {
-      handleConnection(client);
-    });
+    client = widget.chat_client;
+    handleListen();
   }
 
-  void handleConnection(Socket client) {
-    print('Connection from'
-        ' ${client.remoteAddress.address}:${client.remotePort}');
+  handleListen() {
+    void messageHandler(List data) {
+      String message = new String.fromCharCodes(data as Iterable<int>).trim();
+      ChatMessage new_message =
+          ChatMessage(messageContent: message, messageType: "receiver");
+      messages.add(new_message);
+      _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 10), curve: Curves.easeOut);
+      setState(() {});
+    }
 
-    // listen for events from the client
-    client.listen(
-      // handle data from the client
-      (Uint8List data) async {
-        await Future.delayed(Duration(seconds: 1));
-        RC4 obj = RC4(encryptor_key);
-        String data_tmp = obj.decodeBytes((data.toList()));
-        ChatMessage new_message =
-            ChatMessage(messageContent: data_tmp, messageType: "receiver");
-        messages.add(new_message);
-        setState(() {});
-      },
+    void errorHandler(error) {
+      print(
+          '${client.remoteAddress.address}:${client.remotePort} Error: $error');
+      client.close();
+    }
 
-      // handle errors
-      onError: (error) {
-        print(error);
-        client.close();
-      },
+    void finishedHandler() {
+      print(
+          '${client.remoteAddress.address}:${client.remotePort} Disconnected');
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const ConnectionScreen()));
+      client.close();
+    }
 
-      // handle the client closing the connection
-      onDone: () {
-        print('Client left');
-        client.close();
-      },
-    );
+    client.listen(messageHandler,
+        onError: errorHandler, onDone: finishedHandler);
   }
 
   @override
@@ -109,14 +86,12 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            'Connected to'
-            ' ${widget.socket.remoteAddress.address}:${widget.socket.remotePort}',
+            'Connected to ${client.remoteAddress.address}:${client.remotePort}',
             textAlign: TextAlign.center,
           ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              widget.socket.destroy();
               widget.server.close();
               Navigator.push(
                   context,
@@ -190,7 +165,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             _scrollController.position.maxScrollExtent,
                             duration: Duration(milliseconds: 10),
                             curve: Curves.easeOut);
-                        sendMessage(widget.socket, message_controller.text);
+                        client.write(message_controller.text);
                         message_controller.clear();
                         setState(() {});
                       },
@@ -208,12 +183,5 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ],
         ));
-  }
-
-  Future<void> sendMessage(Socket socket, String message) async {
-    RC4 obj = RC4(encryptor_key);
-    List<int> bytes = obj.encodeBytes(utf8.encode(message));
-    socket.add(bytes);
-    await Future.delayed(Duration(seconds: 2));
   }
 }

@@ -1,5 +1,6 @@
 import 'package:chat_sg/chatscreen.dart';
 import 'package:chat_sg/classes/abstract/encryptor.dart';
+import 'package:chat_sg/classes/chat_client.dart';
 import 'package:chat_sg/connectionscreen.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -33,15 +34,18 @@ class _ConnectionSplashScreenState extends State<ConnectionSplashScreen> {
 
   connect() async {
     try {
-      server = await ServerSocket.bind(
-          InternetAddress.anyIPv4, int.parse(widget.port));
-      socket = await Socket.connect(widget.ip, int.parse(widget.port),
-          timeout: Duration(seconds: 3));
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  ChatScreen(server, socket, widget.encryptor)));
+      ServerSocket server =
+          await ServerSocket.bind(InternetAddress.anyIPv4, 3000);
+      print("Server connected");
+      server.listen((client) {
+        print('Connection from '
+            '${client.remoteAddress.address}:${client.remotePort}');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    ChatScreen(server, client, widget.encryptor)));
+      });
     } on SocketException catch (_) {
       _showToast(_.message);
       //server.close();
@@ -87,7 +91,7 @@ class _ConnectionSplashScreenState extends State<ConnectionSplashScreen> {
                   children: const [
                     Padding(
                       padding: EdgeInsets.all(30.0),
-                      child: Text("Connecting to client...",
+                      child: Text("Waiting connection from client...",
                           style:
                               TextStyle(fontFamily: 'Mate_SC', fontSize: 24)),
                     ),
