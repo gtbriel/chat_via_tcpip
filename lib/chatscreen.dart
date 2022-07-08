@@ -51,13 +51,12 @@ class _ChatScreenState extends State<ChatScreen> {
     void errorHandler(error) {
       print(
           '${client.remoteAddress.address}:${client.remotePort} Error: $error');
-      if (widget.server == false) {
-        widget.chat_client.close();
+      if (widget.server == Null) {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const ChooseYourPath()));
       } else {
-        widget.chat_client.close();
         widget.server.close();
+        widget.chat_client.close();
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const ChooseYourPath()));
       }
@@ -66,13 +65,12 @@ class _ChatScreenState extends State<ChatScreen> {
     void finishedHandler() {
       print(
           '${client.remoteAddress.address}:${client.remotePort} Disconnected');
-      if (widget.server == false) {
-        widget.chat_client.close();
+      if (widget.server == Null) {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const ChooseYourPath()));
       } else {
-        widget.chat_client.close();
         widget.server.close();
+        widget.chat_client.close();
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const ChooseYourPath()));
       }
@@ -109,15 +107,14 @@ class _ChatScreenState extends State<ChatScreen> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              if (widget.server == false) {
-                widget.chat_client.close();
+              if (widget.server == Null) {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => const ChooseYourPath()));
               } else {
-                widget.chat_client.close();
                 widget.server.close();
+                widget.chat_client.close();
                 Navigator.push(
                     context,
                     MaterialPageRoute(
