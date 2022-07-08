@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:chat_sg/choose_your_path.dart';
 import 'package:chat_sg/classes/abstract/encryptor.dart';
 import 'package:chat_sg/classes/chat_client.dart';
 import 'package:chat_sg/classes/chat_message.dart';
@@ -50,17 +51,31 @@ class _ChatScreenState extends State<ChatScreen> {
     void errorHandler(error) {
       print(
           '${client.remoteAddress.address}:${client.remotePort} Error: $error');
-      client.close();
+      if (widget.server == false) {
+        widget.chat_client.close();
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const ChooseYourPath()));
+      } else {
+        widget.chat_client.close();
+        widget.server.close();
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const ChooseYourPath()));
+      }
     }
 
     void finishedHandler() {
       print(
           '${client.remoteAddress.address}:${client.remotePort} Disconnected');
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const ConnectionScreenClient()));
-      client.close();
+      if (widget.server == false) {
+        widget.chat_client.close();
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const ChooseYourPath()));
+      } else {
+        widget.chat_client.close();
+        widget.server.close();
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const ChooseYourPath()));
+      }
     }
 
     client.listen(messageHandler,
@@ -94,14 +109,19 @@ class _ChatScreenState extends State<ChatScreen> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              try {
-                widget.server.close();
-              } on NoSuchMethodError catch (_) {
-              } finally {
+              if (widget.server == false) {
+                widget.chat_client.close();
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const ConnectionScreenClient()));
+                        builder: (context) => const ChooseYourPath()));
+              } else {
+                widget.chat_client.close();
+                widget.server.close();
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ChooseYourPath()));
               }
             },
           ),
