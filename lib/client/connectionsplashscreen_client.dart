@@ -1,25 +1,28 @@
 import 'package:chat_sg/chatscreen.dart';
 import 'package:chat_sg/classes/abstract/encryptor.dart';
 import 'package:chat_sg/classes/chat_client.dart';
-import 'package:chat_sg/connectionscreen.dart';
+import 'package:chat_sg/client/connectionscreen_client.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:simple_rc4/simple_rc4.dart';
 
-class ConnectionSplashScreen extends StatefulWidget {
+class ConnectionSplashScreenClient extends StatefulWidget {
   final String ip;
   final String port;
   final String encryptor;
-  const ConnectionSplashScreen(this.ip, this.port, this.encryptor, {Key? key})
+  const ConnectionSplashScreenClient(this.ip, this.port, this.encryptor,
+      {Key? key})
       : super(key: key);
 
   @override
-  State<ConnectionSplashScreen> createState() => _ConnectionSplashScreenState();
+  State<ConnectionSplashScreenClient> createState() =>
+      _ConnectionSplashScreenClientState();
 }
 
-class _ConnectionSplashScreenState extends State<ConnectionSplashScreen> {
+class _ConnectionSplashScreenClientState
+    extends State<ConnectionSplashScreenClient> {
   late FToast fToast;
 
   void initState() {
@@ -34,25 +37,34 @@ class _ConnectionSplashScreenState extends State<ConnectionSplashScreen> {
 
   connect() async {
     try {
-      ServerSocket server =
-          await ServerSocket.bind(InternetAddress.anyIPv4, 3000);
-      print("Server connected");
-      server.listen((client) {
-        print('Connection from '
-            '${client.remoteAddress.address}:${client.remotePort}');
+      Socket.connect("localhost", 3000).then((Socket sock) {
+        socket = sock;
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    ChatScreen(server, client, widget.encryptor)));
+                    ChatScreen(Null, socket, widget.encryptor)));
       });
     } on SocketException catch (_) {
       _showToast(_.message);
       //server.close();
       await Future.delayed(Duration(seconds: 1));
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => ConnectionScreen()));
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => ConnectionScreenClient()));
     }
+  }
+
+  void dataHandler(data) {
+    print(new String.fromCharCodes(data).trim());
+  }
+
+  void errorHandler(error, StackTrace trace) {
+    print(error);
+  }
+
+  void doneHandler() {
+    socket.destroy();
+    exit(0);
   }
 
   _showToast(String msg) {
@@ -91,7 +103,7 @@ class _ConnectionSplashScreenState extends State<ConnectionSplashScreen> {
                   children: const [
                     Padding(
                       padding: EdgeInsets.all(30.0),
-                      child: Text("Waiting connection from client...",
+                      child: Text("Connecting to...",
                           style:
                               TextStyle(fontFamily: 'Mate_SC', fontSize: 24)),
                     ),

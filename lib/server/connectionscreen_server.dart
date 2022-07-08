@@ -1,14 +1,15 @@
-import 'package:chat_sg/connectionsplashscreen.dart';
+import 'package:chat_sg/client/connectionsplashscreen_client.dart';
+import 'package:chat_sg/server/connectionsplashscreen_server.dart';
 import 'package:flutter/material.dart';
 
-class ConnectionScreen extends StatefulWidget {
-  const ConnectionScreen({Key? key}) : super(key: key);
+class ConnectionScreenServer extends StatefulWidget {
+  const ConnectionScreenServer({Key? key}) : super(key: key);
 
   @override
-  State<ConnectionScreen> createState() => _ConnectionScreenState();
+  State<ConnectionScreenServer> createState() => _ConnectionScreenServerState();
 }
 
-class _ConnectionScreenState extends State<ConnectionScreen> {
+class _ConnectionScreenServerState extends State<ConnectionScreenServer> {
   final ip_controller = TextEditingController();
   final port_controller = TextEditingController();
   final List<String> encrypts = ['RC4'];
@@ -16,34 +17,6 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ip_field = TextFormField(
-      autofocus: false,
-      controller: ip_controller,
-      keyboardType: TextInputType.text,
-      onSaved: (value) {
-        ip_controller.text = value!;
-      },
-      textInputAction: TextInputAction.next,
-      decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-          hintText: 'IPv4',
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
-    );
-
-    final port_field = TextFormField(
-      autofocus: false,
-      controller: port_controller,
-      keyboardType: TextInputType.number,
-      onSaved: (value) {
-        port_controller.text = value!;
-      },
-      textInputAction: TextInputAction.next,
-      decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-          hintText: 'Port',
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
-    );
-
     return Scaffold(
         body: Center(
       child: Container(
@@ -78,44 +51,21 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
                     )
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Column(
-                    children: [
-                      ip_field,
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      port_field,
-                      const SizedBox(
-                        height: 30,
-                      ),
-                    ],
-                  ),
-                ),
                 MaterialButton(
                   minWidth: MediaQuery.of(context).size.height - 200,
                   height: 60,
                   onPressed: () {
-                    switch (selectedItem) {
-                      case "RC4":
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ConnectionSplashScreen(
-                                    ip_controller.text,
-                                    port_controller.text,
-                                    "RC4")));
-                        break;
-
-                      default:
-                    }
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ConnectionSplashScreenServer(selectedItem!)));
                   },
                   color: Colors.indigoAccent[400],
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(40)),
                   child: const Text(
-                    "Conecte-se",
+                    "Inicie o Servidor",
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,

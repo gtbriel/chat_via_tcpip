@@ -4,14 +4,14 @@ import 'dart:typed_data';
 import 'package:chat_sg/classes/abstract/encryptor.dart';
 import 'package:chat_sg/classes/chat_client.dart';
 import 'package:chat_sg/classes/chat_message.dart';
-import 'package:chat_sg/connectionscreen.dart';
+import 'package:chat_sg/client/connectionscreen_client.dart';
 import 'package:flutter/material.dart';
 
 import 'classes/encryptors/rc4.dart';
 
 class ChatScreen extends StatefulWidget {
+  final dynamic server;
   final Socket chat_client;
-  final ServerSocket server;
   final String encryptor;
   const ChatScreen(this.server, this.chat_client, this.encryptor, {Key? key})
       : super(key: key);
@@ -56,8 +56,10 @@ class _ChatScreenState extends State<ChatScreen> {
     void finishedHandler() {
       print(
           '${client.remoteAddress.address}:${client.remotePort} Disconnected');
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const ConnectionScreen()));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const ConnectionScreenClient()));
       client.close();
     }
 
@@ -96,7 +98,7 @@ class _ChatScreenState extends State<ChatScreen> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const ConnectionScreen()));
+                      builder: (context) => const ConnectionScreenClient()));
             },
           ),
         ),

@@ -1,8 +1,6 @@
-import 'package:chat_sg/connectionscreen.dart';
+import 'package:chat_sg/choose_your_path.dart';
 import 'package:flutter/material.dart';
 import 'package:desktop_window/desktop_window.dart';
-import 'dart:io';
-import 'dart:typed_data';
 
 void main() async {
   runApp(const MyApp());
@@ -24,7 +22,7 @@ class MyApp extends StatelessWidget {
       title: 'Chat App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
-      home: const ConnectionScreen(),
+      home: const ChooseYourPath(),
     );
   }
 }
