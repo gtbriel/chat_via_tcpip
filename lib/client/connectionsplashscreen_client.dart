@@ -37,7 +37,7 @@ class _ConnectionSplashScreenClientState
 
   connect() async {
     try {
-      Socket.connect("localhost", 3000).then((Socket sock) {
+      Socket.connect(widget.ip, int.parse(widget.port)).then((Socket sock) {
         socket = sock;
         Navigator.push(
             context,

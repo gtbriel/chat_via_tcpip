@@ -94,11 +94,15 @@ class _ChatScreenState extends State<ChatScreen> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              widget.server.close();
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ConnectionScreenClient()));
+              try {
+                widget.server.close();
+              } on NoSuchMethodError catch (_) {
+              } finally {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ConnectionScreenClient()));
+              }
             },
           ),
         ),
