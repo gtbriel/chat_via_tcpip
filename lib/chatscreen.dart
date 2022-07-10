@@ -5,6 +5,7 @@ import 'package:chat_sg/choose_your_path.dart';
 import 'package:chat_sg/classes/abstract/encryptor.dart';
 import 'package:chat_sg/classes/chat_message.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'classes/encryptors/rc4.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -26,12 +27,15 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<ChatMessage> messages = [];
   final ScrollController _scrollController = ScrollController();
   late Encryptor encryptor;
+  late FToast fToast;
   late Socket client;
   late String encryptor_key;
 
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    fToast.init(context);
     client = widget.chatClient;
     handleListen();
     key_exchange();
@@ -62,6 +66,7 @@ class _ChatScreenState extends State<ChatScreen> {
         }
         setState(() {});
         print(encryptor_key);
+        _showToast("Key exchange executed successfully!!");
         gotKey = true;
       } else {
         String message = encryptor.decodeBytes(data);
@@ -104,6 +109,26 @@ class _ChatScreenState extends State<ChatScreen> {
 
     client.listen(messageHandler,
         onError: errorHandler, onDone: finishedHandler);
+  }
+
+  _showToast(String msg) {
+    Widget toast = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: Colors.grey,
+      ),
+      child: Text(
+        msg,
+        style: const TextStyle(color: Colors.white),
+      ),
+    );
+
+    fToast.showToast(
+      child: toast,
+      gravity: ToastGravity.BOTTOM,
+      toastDuration: const Duration(seconds: 5),
+    );
   }
 
   @override
