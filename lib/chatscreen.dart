@@ -1,12 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:chat_sg/choose_your_path.dart';
 import 'package:chat_sg/classes/abstract/encryptor.dart';
-import 'package:chat_sg/classes/chat_client.dart';
 import 'package:chat_sg/classes/chat_message.dart';
-import 'package:chat_sg/classes/encryptors/sdes.dart';
-import 'package:chat_sg/client/connectionscreen_client.dart';
 import 'package:flutter/material.dart';
 
 import 'classes/encryptors/rc4.dart';
@@ -45,8 +41,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   handleListen() {
     void messageHandler(List<int> data) {
-      List<int> decodedMessage = encryptor.decodeBytes(data);
-      String message = utf8.decode(decodedMessage);
+      String message = encryptor.decodeBytes(data);
       ChatMessage new_message =
           ChatMessage(messageContent: message, messageType: "receiver");
       messages.add(new_message);

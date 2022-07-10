@@ -1,6 +1,4 @@
 import 'package:chat_sg/chatscreen.dart';
-import 'package:chat_sg/classes/abstract/encryptor.dart';
-import 'package:chat_sg/classes/chat_client.dart';
 import 'package:chat_sg/client/connectionscreen_client.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
