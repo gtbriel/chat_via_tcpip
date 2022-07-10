@@ -19,6 +19,8 @@ class ConnectionSplashScreenClient extends StatefulWidget {
 
 class _ConnectionSplashScreenClientState
     extends State<ConnectionSplashScreenClient> {
+  late Socket socket;
+  late ServerSocket server;
   late FToast fToast;
 
   void initState() {
@@ -28,10 +30,12 @@ class _ConnectionSplashScreenClientState
     connect();
   }
 
-  late Socket socket;
-  late ServerSocket server;
-
   connect() async {
+    Map<String, int> dict = {
+      'P': 23,
+      'G': 9,
+      'private_key': 3,
+    };
     try {
       Socket.connect(widget.ip, int.parse(widget.port)).then((Socket sock) {
         socket = sock;
@@ -39,7 +43,7 @@ class _ConnectionSplashScreenClientState
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    ChatScreen(Null, socket, widget.encryptor)));
+                    ChatScreen(Null, socket, dict, widget.encryptor)));
       });
     } on SocketException catch (_) {
       _showToast(_.message);
@@ -48,19 +52,6 @@ class _ConnectionSplashScreenClientState
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => ConnectionScreenClient()));
     }
-  }
-
-  void dataHandler(data) {
-    print(new String.fromCharCodes(data).trim());
-  }
-
-  void errorHandler(error, StackTrace trace) {
-    print(error);
-  }
-
-  void doneHandler() {
-    socket.destroy();
-    exit(0);
   }
 
   _showToast(String msg) {

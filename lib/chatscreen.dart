@@ -1,17 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:chat_sg/choose_your_path.dart';
 import 'package:chat_sg/classes/abstract/encryptor.dart';
 import 'package:chat_sg/classes/chat_message.dart';
 import 'package:flutter/material.dart';
-
 import 'classes/encryptors/rc4.dart';
 
 class ChatScreen extends StatefulWidget {
   final dynamic server;
   final Socket chatClient;
   final String encryptor;
-  const ChatScreen(this.server, this.chatClient, this.encryptor, {Key? key})
+  final Map<String, int> keyDict;
+  const ChatScreen(this.server, this.chatClient, this.keyDict, this.encryptor,
+      {Key? key})
       : super(key: key);
 
   @override
@@ -20,34 +22,54 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final message_controller = TextEditingController();
-
+  bool gotKey = false;
   final List<ChatMessage> messages = [];
   final ScrollController _scrollController = ScrollController();
   late Encryptor encryptor;
   late Socket client;
+  late String encryptor_key;
 
   @override
   void initState() {
     super.initState();
+    client = widget.chatClient;
+    handleListen();
+    key_exchange();
     switch (widget.encryptor) {
       case "RC4":
-        encryptor = RC4("teste");
+        encryptor = RC4(encryptor_key);
         break;
       default:
     }
-    client = widget.chatClient;
-    handleListen();
+  }
+
+  key_exchange() {
+    int G = widget.keyDict['G'] as int;
+    int private_key = widget.keyDict['private_key'] as int;
+    int partialKey = pow(G, private_key) as int;
+    partialKey = partialKey % (widget.keyDict['P'] as int);
+    client.add(utf8.encode(partialKey.toString()));
   }
 
   handleListen() {
     void messageHandler(List<int> data) {
-      String message = encryptor.decodeBytes(data);
-      ChatMessage newMessage =
-          ChatMessage(messageContent: message, messageType: "receiver");
-      messages.add(newMessage);
-      _scrollController.animateTo(_scrollController.position.maxScrollExtent,
-          duration: Duration(milliseconds: 10), curve: Curves.easeOut);
-      setState(() {});
+      if (gotKey == false) {
+        int publicPartialKey = int.parse(utf8.decode(data));
+        publicPartialKey =
+            pow(publicPartialKey, (widget.keyDict['private_key'] as int))
+                as int;
+        publicPartialKey = publicPartialKey % (widget.keyDict['P'] as int);
+        encryptor_key = publicPartialKey.toString();
+        gotKey = true;
+      } else {
+        String message = encryptor.decodeBytes(data);
+        ChatMessage newMessage =
+            ChatMessage(messageContent: message, messageType: "receiver");
+        messages.add(newMessage);
+        _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+            duration: Duration(milliseconds: 10), curve: Curves.easeOut);
+        setState(() {});
+      }
     }
 
     void errorHandler(error) {

@@ -17,7 +17,8 @@ class ConnectionSplashScreenServer extends StatefulWidget {
 class _ConnectionSplashScreenServerState
     extends State<ConnectionSplashScreenServer> {
   late FToast fToast;
-
+  late Socket socket;
+  late ServerSocket server;
   void initState() {
     super.initState();
     fToast = FToast();
@@ -25,10 +26,12 @@ class _ConnectionSplashScreenServerState
     connect();
   }
 
-  late Socket socket;
-  late ServerSocket server;
-
   connect() async {
+    Map<String, int> dict = {
+      'P': 23,
+      'G': 9,
+      'private_key': 4,
+    };
     try {
       ServerSocket server =
           await ServerSocket.bind(InternetAddress.anyIPv4, 3000);
@@ -39,7 +42,7 @@ class _ConnectionSplashScreenServerState
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ChatScreen(server, client, "RC4")));
+                builder: (context) => ChatScreen(server, client, dict, "RC4")));
       });
     } on SocketException catch (_) {
       _showToast(_.message);
