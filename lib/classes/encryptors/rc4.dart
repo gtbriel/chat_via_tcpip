@@ -48,6 +48,7 @@ class RC4 implements Encryptor {
   }
 
   List<int> encodeBytes(List<int> bytes) => _crypt(bytes);
+
   List<int> decodeBytes(List<int> bytes) => _crypt(bytes);
 
   String encodeString(String message, [bool encodeBase64 = true]) {
@@ -61,6 +62,7 @@ class RC4 implements Encryptor {
       var crypted = _crypt(bytes);
       return utf8.decode(crypted);
     }
+
     var decrypted = _crypt(utf8.encode(message));
     return utf8.decode(decrypted);
   }
