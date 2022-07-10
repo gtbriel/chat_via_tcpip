@@ -213,6 +213,6 @@ class _ChatScreenState extends State<ChatScreen> {
   sendMessage(String text) {
     List<int> bytes = utf8.encode(text);
     List<int> encryptedBytes = encryptor.encodeBytes(bytes);
-    client.write(encryptedBytes);
+    client.add(encryptedBytes);
   }
 }
