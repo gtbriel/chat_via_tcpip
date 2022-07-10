@@ -1,4 +1,6 @@
-class SDES {
+import 'package:chat_sg/classes/abstract/encryptor.dart';
+
+class SDES implements Encryptor {
   final List<int> key;
 
   final List<int> P10 = [3, 5, 2, 7, 4, 10, 1, 9, 8, 6];
@@ -204,5 +206,29 @@ class SDES {
       ciphertext[i] = arr2[IP_inv[i] - 1];
     }
     return ciphertext;
+  }
+
+  @override
+  String decodeBytes(List<int> bytes) {
+    // TODO: implement decodeBytes
+    throw UnimplementedError();
+  }
+
+  @override
+  String decodeString(String message, [bool encodedBase64 = true]) {
+    // TODO: implement decodeString
+    throw UnimplementedError();
+  }
+
+  @override
+  List<int> encodeBytes(List<int> bytes) {
+    // TODO: implement encodeBytes
+    throw UnimplementedError();
+  }
+
+  @override
+  String encodeString(String message, [bool encodeBase64 = true]) {
+    // TODO: implement encodeString
+    throw UnimplementedError();
   }
 }
