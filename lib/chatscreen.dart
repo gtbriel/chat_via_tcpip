@@ -35,12 +35,6 @@ class _ChatScreenState extends State<ChatScreen> {
     client = widget.chatClient;
     handleListen();
     key_exchange();
-    switch (widget.encryptor) {
-      case "RC4":
-        encryptor = RC4(encryptor_key);
-        break;
-      default:
-    }
   }
 
   key_exchange() {
@@ -60,6 +54,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 as int;
         publicPartialKey = publicPartialKey % (widget.keyDict['P'] as int);
         encryptor_key = publicPartialKey.toString();
+        switch (widget.encryptor) {
+          case "RC4":
+            encryptor = RC4(encryptor_key);
+            break;
+          default:
+        }
+        setState(() {});
+        print(encryptor_key);
         gotKey = true;
       } else {
         String message = encryptor.decodeBytes(data);
