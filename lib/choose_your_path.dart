@@ -1,7 +1,5 @@
 import 'package:chat_sg/client/connectionscreen_client.dart';
 import 'package:chat_sg/server/connectionscreen_server.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 import 'package:flutter/material.dart';
 

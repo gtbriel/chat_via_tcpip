@@ -1,5 +1,4 @@
 import 'package:chat_sg/client/connectionsplashscreen_client.dart';
-import 'package:chat_sg/server/connectionsplashscreen_server.dart';
 import 'package:flutter/material.dart';
 
 class ConnectionScreenClient extends StatefulWidget {

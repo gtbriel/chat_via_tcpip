@@ -9,9 +9,9 @@ import 'classes/encryptors/rc4.dart';
 
 class ChatScreen extends StatefulWidget {
   final dynamic server;
-  final Socket chat_client;
+  final Socket chatClient;
   final String encryptor;
-  const ChatScreen(this.server, this.chat_client, this.encryptor, {Key? key})
+  const ChatScreen(this.server, this.chatClient, this.encryptor, {Key? key})
       : super(key: key);
 
   @override
@@ -35,16 +35,16 @@ class _ChatScreenState extends State<ChatScreen> {
         break;
       default:
     }
-    client = widget.chat_client;
+    client = widget.chatClient;
     handleListen();
   }
 
   handleListen() {
     void messageHandler(List<int> data) {
       String message = encryptor.decodeBytes(data);
-      ChatMessage new_message =
+      ChatMessage newMessage =
           ChatMessage(messageContent: message, messageType: "receiver");
-      messages.add(new_message);
+      messages.add(newMessage);
       _scrollController.animateTo(_scrollController.position.maxScrollExtent,
           duration: Duration(milliseconds: 10), curve: Curves.easeOut);
       setState(() {});
@@ -58,7 +58,7 @@ class _ChatScreenState extends State<ChatScreen> {
             MaterialPageRoute(builder: (context) => const ChooseYourPath()));
       } else {
         widget.server.close();
-        widget.chat_client.close();
+        widget.chatClient.close();
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const ChooseYourPath()));
       }
@@ -72,7 +72,7 @@ class _ChatScreenState extends State<ChatScreen> {
             MaterialPageRoute(builder: (context) => const ChooseYourPath()));
       } else {
         widget.server.close();
-        widget.chat_client.close();
+        widget.chatClient.close();
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const ChooseYourPath()));
       }
@@ -84,7 +84,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final msg_field = TextFormField(
+    final msgField = TextFormField(
       autofocus: false,
       style: const TextStyle(color: Colors.black),
       controller: message_controller,
@@ -116,7 +116,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         builder: (context) => const ChooseYourPath()));
               } else {
                 widget.server.close();
-                widget.chat_client.close();
+                widget.chatClient.close();
                 Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -176,16 +176,16 @@ class _ChatScreenState extends State<ChatScreen> {
                 color: Colors.white,
                 child: Row(
                   children: <Widget>[
-                    Expanded(child: msg_field),
+                    Expanded(child: msgField),
                     const SizedBox(
                       width: 15,
                     ),
                     FloatingActionButton(
                       onPressed: () {
-                        ChatMessage new_message = ChatMessage(
+                        ChatMessage newMessage = ChatMessage(
                             messageContent: message_controller.text,
                             messageType: "sender");
-                        messages.add(new_message);
+                        messages.add(newMessage);
                         _scrollController.animateTo(
                             _scrollController.position.maxScrollExtent,
                             duration: Duration(milliseconds: 10),

@@ -2,9 +2,7 @@ import 'package:chat_sg/chatscreen.dart';
 import 'package:chat_sg/client/connectionscreen_client.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:simple_rc4/simple_rc4.dart';
 
 class ConnectionSplashScreenClient extends StatefulWidget {
   final String ip;
