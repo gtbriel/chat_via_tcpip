@@ -5,6 +5,7 @@ import 'package:chat_sg/choose_your_path.dart';
 import 'package:chat_sg/classes/abstract/encryptor.dart';
 import 'package:chat_sg/classes/chat_client.dart';
 import 'package:chat_sg/classes/chat_message.dart';
+import 'package:chat_sg/classes/encryptors/sdes.dart';
 import 'package:chat_sg/client/connectionscreen_client.dart';
 import 'package:flutter/material.dart';
 
@@ -26,20 +27,26 @@ class _ChatScreenState extends State<ChatScreen> {
 
   final List<ChatMessage> messages = [];
   final ScrollController _scrollController = ScrollController();
-  late String encryptor_key;
+  late Encryptor encryptor;
   late Socket client;
 
   @override
   void initState() {
     super.initState();
-    encryptor_key = widget.encryptor;
+    switch (widget.encryptor) {
+      case "RC4":
+        encryptor = RC4("teste");
+        break;
+      default:
+    }
     client = widget.chat_client;
     handleListen();
   }
 
   handleListen() {
-    void messageHandler(List data) {
-      String message = new String.fromCharCodes(data as Iterable<int>).trim();
+    void messageHandler(List<int> data) {
+      List<int> decodedMessage = encryptor.decodeBytes(data);
+      String message = utf8.decode(decodedMessage);
       ChatMessage new_message =
           ChatMessage(messageContent: message, messageType: "receiver");
       messages.add(new_message);
@@ -188,7 +195,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             _scrollController.position.maxScrollExtent,
                             duration: Duration(milliseconds: 10),
                             curve: Curves.easeOut);
-                        client.write(message_controller.text);
+                        sendMessage(message_controller.text);
                         message_controller.clear();
                         setState(() {});
                       },
@@ -206,5 +213,11 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ],
         ));
+  }
+
+  sendMessage(String text) {
+    List<int> bytes = utf8.encode(text);
+    List<int> encryptedBytes = encryptor.encodeBytes(bytes);
+    client.write(encryptedBytes);
   }
 }

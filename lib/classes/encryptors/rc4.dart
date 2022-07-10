@@ -1,6 +1,8 @@
 import 'dart:convert';
 
-class RC4 {
+import 'package:chat_sg/classes/abstract/encryptor.dart';
+
+class RC4 implements Encryptor {
   List<int> get key => _key;
   late List<int> _key;
   late List<int> _box;
@@ -46,7 +48,7 @@ class RC4 {
   }
 
   List<int> encodeBytes(List<int> bytes) => _crypt(bytes);
-  String decodeBytes(List<int> bytes) => utf8.decode(_crypt(bytes));
+  List<int> decodeBytes(List<int> bytes) => _crypt(bytes);
 
   String encodeString(String message, [bool encodeBase64 = true]) {
     var crypted = _crypt(utf8.encode(message));
