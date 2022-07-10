@@ -1,11 +1,6 @@
 import 'dart:convert';
-
 import 'package:chat_sg/classes/abstract/encryptor.dart';
 
-/// A simple RC4 encryptor.
-///
-/// To use the class, just create an instance of it, and then call methods such
-/// as [RC4.encodeBytes], [RC4.decodeBytes] and so on.
 class RC4 implements Encryptor {
   /// The key.
   List<int> get key => _key;
@@ -54,39 +49,15 @@ class RC4 implements Encryptor {
     return out;
   }
 
-  /// Encodes bytes via RC4 encryption.
-  ///
-  /// However, actually calling [RC4.encodeBytes] and [RC4.decodeBytes] will
-  /// give the same result.
   List<int> encodeBytes(List<int> bytes) => _crypt(bytes);
 
-  /// Decodes bytes via RC4 encryption.
-  ///
-  /// However, actually calling [RC4.encodeBytes] and [RC4.decodeBytes] will
-  /// give the same result.
   String decodeBytes(List<int> bytes) => utf8.decode(_crypt(bytes));
 
-  /// Encodes a string into another string via RC4 encryption.
-  ///
-  /// Please note that the method uses UTF-8 text encoding when converting
-  /// strings to binary data. If you want to use another string encoding, please
-  /// convert your string into bytes using your own encoding and pass your data
-  /// to [RC4.encodeBytes].
-  ///
-  /// [encodeBase64] represents if the result should be base64 encoded.
   String encodeString(String message, [bool encodeBase64 = true]) {
     var crypted = _crypt(utf8.encode(message));
     return encodeBase64 ? base64.encode(crypted) : utf8.decode(crypted);
   }
 
-  /// Decodes a string into the original one via RC4 encryption.
-  ///
-  /// Please note that the method uses UTF-8 text encoding when converting
-  /// strings to binary data. If you want to use another string encoding, please
-  /// convert your string into bytes using your own encoding and pass your data
-  /// to [RC4.decodeBytes].
-  ///
-  /// [encodeBase64] represents if the input is base64 encoded.
   String decodeString(String message, [bool encodedBase64 = true]) {
     if (encodedBase64) {
       var bytes = base64.decode(message);
