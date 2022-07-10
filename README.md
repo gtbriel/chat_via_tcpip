@@ -3,16 +3,14 @@
 A new Flutter project which implements a simple, but functional, chat app using TCP/IP protocol and native Dart libraries.
 
 ## Features
+  - Diffie-Hellman Algorithm (Key Exchange)
+  - Server/Client side integration
 
 ### Encryptors
   - [X] RC4
   - [X] SDES
   - [ ] AES 
   - [ ] RSA
-
-### Features
-  - Diffie-Hellman Algorithm (Key Exchange)
-  - Server/Client side integration
 
 ## References
 - [Flutter official documentation](https://flutter.dev/docs)
