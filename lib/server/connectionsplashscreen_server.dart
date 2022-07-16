@@ -42,7 +42,8 @@ class _ConnectionSplashScreenServerState
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ChatScreen(server, client, dict, "RC4")));
+                builder: (context) =>
+                    ChatScreen(server, client, dict, widget.encryptor)));
       });
     } on SocketException catch (_) {
       _showToast(_.message);
