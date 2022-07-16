@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:chat_sg/classes/abstract/encryptor.dart';
 
 class SDES implements Encryptor {
@@ -231,4 +232,14 @@ class SDES implements Encryptor {
     // TODO: implement encodeString
     throw UnimplementedError();
   }
+}
+
+void main() {
+  String key_str = 540.toRadixString(2); // >512
+  List<int> key = [];
+  for (int i = 0; i < key_str.length; i++) {
+    key.add(int.parse(key_str[i]));
+  }
+  print(key_str);
+  print(key);
 }

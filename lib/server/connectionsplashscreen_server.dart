@@ -28,9 +28,9 @@ class _ConnectionSplashScreenServerState
 
   connect() async {
     Map<String, int> dict = {
-      'P': 23,
-      'G': 9,
-      'private_key': 4,
+      'P': 941,
+      'G': 627,
+      'private_key': 781,
     };
     try {
       ServerSocket server =

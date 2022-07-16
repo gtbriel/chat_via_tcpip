@@ -32,9 +32,9 @@ class _ConnectionSplashScreenClientState
 
   connect() async {
     Map<String, int> dict = {
-      'P': 23,
-      'G': 9,
-      'private_key': 3,
+      'P': 941,
+      'G': 627,
+      'private_key': 347,
     };
     try {
       Socket.connect(widget.ip, int.parse(widget.port)).then((Socket sock) {
