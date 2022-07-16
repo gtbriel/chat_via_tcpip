@@ -11,7 +11,7 @@ class ConnectionScreenServer extends StatefulWidget {
 class _ConnectionScreenServerState extends State<ConnectionScreenServer> {
   final ip_controller = TextEditingController();
   final port_controller = TextEditingController();
-  final List<String> encrypts = ['RC4'];
+  final List<String> encrypts = ['RC4', 'SDES'];
   String? selectedItem = 'RC4';
 
   @override
