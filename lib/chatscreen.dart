@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:chat_sg/choose_your_path.dart';
 import 'package:chat_sg/classes/abstract/encryptor.dart';
 import 'package:chat_sg/classes/chat_message.dart';
+import 'package:chat_sg/classes/encryptors/sdes.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'classes/encryptors/rc4.dart';
@@ -61,6 +62,20 @@ class _ChatScreenState extends State<ChatScreen> {
         switch (widget.encryptor) {
           case "RC4":
             encryptor = RC4(encryptor_key);
+            break;
+          case "SDES":
+            String key_str =
+                (int.parse(encryptor_key) * int.parse(encryptor_key))
+                    .toRadixString(2);
+            List<int> key = [];
+            for (int i = 0; i < 10; i++) {
+              if (i < key_str.length) {
+                key.add(int.parse(key_str[i]));
+              } else {
+                key.add(0);
+              }
+            }
+            encryptor = SDES(key);
             break;
           default:
         }
