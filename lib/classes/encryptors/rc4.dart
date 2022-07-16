@@ -2,19 +2,16 @@ import 'dart:convert';
 import 'package:chat_sg/classes/abstract/encryptor.dart';
 
 class RC4 implements Encryptor {
-  /// The key.
   List<int> get key => _key;
   late List<int> _key;
   late List<int> _box;
   int _i = 0, _j = 0;
 
-  /// Creates a new instance by passing a given [key].
   RC4(String key) {
     _key = utf8.encode(key);
     _makeBox();
   }
 
-  /// Creates a new instance by passing a given [key].
   RC4.fromBytes(List<int> key) {
     _key = key;
     _makeBox();
